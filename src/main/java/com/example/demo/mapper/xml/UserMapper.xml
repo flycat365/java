@@ -19,5 +19,10 @@
     <sql id="Base_Column_List">
         id, no, name, password, age, sex, phone, role_id, isValid
     </sql>
-
+    <select id="pagec" resultType="com.example.demo.entity.User">
+        select * from user
+    </select>
+    <select id="pagecc" resultType="com.example.demo.entity.User">
+        select * from user ${ew.customSqlSegment}
+    </select>
 </mapper>

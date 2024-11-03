@@ -1,16 +1,23 @@
 package com.example.demo.common;
 
 import lombok.Data;
-
 import java.util.HashMap;
 
+/**
+ * 分页查询参数类
+ */
 @Data
 public class QueryPageParam {
+    private int pageSize = 20;
+    private int pageNum = 1;
+    private HashMap<String, Object> param = new HashMap<>();
 
+    // Getter和Setter
+    public HashMap<String, Object> getParam() {
+        return param;
+    }
 
-    private static  int PAGE_SIZE=20;
-    private static int PAGE_NUM=1;
-    private int pageSize=PAGE_SIZE;
-    private int PageNum=PAGE_NUM;
-    private HashMap Param;
+    public void setParam(HashMap<String, Object> param) {
+        this.param = param;
+    }
 }

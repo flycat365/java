@@ -34,8 +34,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public IPage pagecc(IPage<User> page, Wrapper wrapper) {
+    public IPage pagecc(IPage<User> page, Wrapper  wrapper) {
         return userMapper.pagecc(page, wrapper);
     };
     }
-}
+

@@ -6,13 +6,28 @@ import java.util.HashMap;
 /**
  * 分页查询参数类
  */
-@Data
 public class QueryPageParam {
-    private int pageSize = 20;
-    private int pageNum = 1;
-    private HashMap<String, Object> param = new HashMap<>();
+    private int pageSize;
+    private int pageNum;
+    private HashMap<String, Object> param;
 
-    // Getter和Setter
+    // Getters and Setters
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
     public HashMap<String, Object> getParam() {
         return param;
     }

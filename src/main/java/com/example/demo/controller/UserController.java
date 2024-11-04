@@ -38,12 +38,36 @@ public class UserController {
         return userService.list();
     }
 
-
-    @PostMapping("/save")
-    public boolean save(@RequestBody User user){
-        return userService.save(user);
+    @GetMapping("/findByNo")
+    public Result findByNo(@RequestParam String no) {
+        List<User> list = userService.lambdaQuery().eq(User::getNo, no).list();
+        return list.size() > 0 ? Result.suc(list) : Result.fail();
     }
 
+    @PostMapping("/update")
+    public Result update(@RequestBody User user) {
+        return userService.updateById(user) ? Result.suc() : Result.fail();
+    }
+    @PostMapping("/save")
+    public Result save(@RequestBody User user) {
+        // 检查userService.save(user)的结果，如果成功返回Result.suc(), 否则返回Result.fail()
+        return userService.save(user) ? Result.suc() : Result.fail();
+    }
+    @PostMapping("/login")
+    public Result login(@RequestBody User user) {
+        // 使用LambdaQueryWrapper来构建查询条件
+        List<User> list = userService.lambdaQuery()
+                .eq(User::getNo, user.getNo())
+                .eq(User::getPassword, user.getPassword())
+                .list();
+
+        // 检查查询结果是否为空
+        return list.size() > 0 ? Result.suc(list.get(0)) : Result.fail();
+    }
+    @GetMapping("/del")
+    public Result del(@RequestParam String id) {
+        return userService.removeById(id) ? Result.suc() : Result.fail();
+    }
     @PostMapping("/mod")
     public boolean mod(@RequestBody User user){
         return userService.updateById(user);
@@ -71,8 +95,10 @@ public class UserController {
 
         HashMap<String, Object> param = query.getParam();
         String name = param != null ? (String) param.get("name") : null;
-
-        System.out.println("name===" + name);
+        // 检查sex是否为空字符串，如果是，则赋值为null
+        String sexStr = param != null ? param.get("sex").toString() : null;
+        Integer sex = (sexStr != null && !sexStr.isEmpty()) ? Integer.parseInt(sexStr) : null;
+        System.out.println("sex===" + sex);
 
         // 检查分页参数
         int pageSize = query.getPageSize() > 0 ? query.getPageSize() : 10;
@@ -85,6 +111,9 @@ public class UserController {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (name != null) {
             lambdaQueryWrapper.like(User::getName, name);
+        }
+        if (sex != null) {
+            lambdaQueryWrapper.eq(User::getSex, sex);
         }
 
         IPage<User> result = userService.page(page, lambdaQueryWrapper);

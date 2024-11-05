@@ -3,10 +3,13 @@ package com.example.demo.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.common.QueryPageParam;
 import com.example.demo.common.Result;
+import com.example.demo.entity.Menu;
 import com.example.demo.entity.User;
+import com.example.demo.service.MenuService;
 import com.example.demo.service.UserService;
 
 import org.apache.ibatis.annotations.Param;
@@ -30,7 +33,8 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-
+    @Autowired
+    private MenuService menuService;
     @Autowired
     private UserService userService;
     @GetMapping("/list")
@@ -60,9 +64,20 @@ public class UserController {
                 .eq(User::getNo, user.getNo())
                 .eq(User::getPassword, user.getPassword())
                 .list();
+        if (list.size() > 0) {
+            User user1 = (User) list.get(0);
 
+            List<Menu> menuList = menuService.lambdaQuery()
+                    .like(Menu::getMenuRight, user1.getRoleId())
+                    .list();
+            HashMap<String, Object> res = new HashMap<>();
+            res.put("user", user1);
+            res.put("menu", menuList);
+            return Result.suc(res);
+        }
+        return Result.fail();
         // 检查查询结果是否为空
-        return list.size() > 0 ? Result.suc(list.get(0)) : Result.fail();
+
     }
     @GetMapping("/del")
     public Result del(@RequestParam String id) {
@@ -99,7 +114,7 @@ public class UserController {
         String sexStr = param != null ? param.get("sex").toString() : null;
         Integer sex = (sexStr != null && !sexStr.isEmpty()) ? Integer.parseInt(sexStr) : null;
         System.out.println("sex===" + sex);
-
+        String roleId = param != null ? (String) param.get("roleId") : null;
         // 检查分页参数
         int pageSize = query.getPageSize() > 0 ? query.getPageSize() : 10;
         int pageNum = query.getPageNum() > 0 ? query.getPageNum() : 1;
@@ -114,6 +129,9 @@ public class UserController {
         }
         if (sex != null) {
             lambdaQueryWrapper.eq(User::getSex, sex);
+        }
+        if (roleId != null) {
+            lambdaQueryWrapper.eq(User::getRoleId, roleId);
         }
 
         IPage<User> result = userService.page(page, lambdaQueryWrapper);
